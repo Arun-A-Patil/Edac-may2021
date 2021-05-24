@@ -1,0 +1,180 @@
+01.Write a program to print Hello World. Compile and run it using command prompt.
+ans:-
+public class Firstprogram {
+	public static void main(String [] args)
+	{
+		System.out.println("Hello World");
+	}
+}
+
+
+02.Write a program to declare a variable named rollNo of integer type. Assign it a value (let say 100) to it and print the following statement 
+roll no = 100 .
+ans:-
+public class Firstdemo {
+	public static void main(String[] args) {
+		int rollNo = 100;
+		System.out.println("roll no"+" "+"="+" "+rollNo);
+     
+	}
+
+}
+
+
+03.Find the result of following expressions. You need to determine the primitive data type of the variable by looking carefully the given 
+expression and initialize variables by any random value.
+A. y = x2 + 3x - 7 (print value of y) 
+B. y = x++ + ++x (print value of x and y) 
+C. z = x++ - --y - --x  +  x++ (print value of x ,y and z)
+D. z = x && y || !(x || y)  (print value of z) [ x, y, z are boolean variables ]
+ans:-
+import java.util.Scanner;
+public class Expression {
+	static void exp1(int x)
+	{
+		int y =x*x+3*x-7;
+		System.out.println(y);
+	}
+	static void exp2(int x)
+	{
+		int y = x++ + ++x;
+		System.out.println(y+" "+x);
+	}
+	static void exp3(int x,int y)
+	{
+		int z = x++ - --y - --x + x++;
+		System.out.println(z);
+	}
+	static void exp4(boolean x,boolean y)
+	{
+		boolean z = x && y || !(x||y);
+		System.out.println(z);
+	}
+	public static void main(String[] args) {
+		exp1(7);
+		exp2(8);
+	    exp3(7,8);
+		exp4(true,false);
+		
+	}
+
+}
+
+
+04.Write a program that initializes 2 byte type of variables. Add the values of these variables and store in a byte type of variable.
+ [Note: primitive down casting is required in this program ] .
+ans:-
+import java.util.Scanner;
+public class Example4 {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("enter first byte a: ");
+		byte a = sc.nextByte();
+		System.out.println("enter second byte b: ");
+		byte b = sc.nextByte();
+		byte c = (byte)(a + b);
+		System.out.println("Addition of two bytes: "+c);
+	}
+
+}
+//05.	Write a program that takes user’s name as command line argument and
+//prints Welcome <entered user name>.
+package pkg1;
+import java.util.Scanner;
+public class Program5 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+Scanner scan=new Scanner(System.in);
+System.out.println(" Enter  your user Name");
+String str=scan.next();
+System.out.println(" Welcome<"+str+">");
+}
+
+}
+out put-----------
+Enter  your user Name
+Arun@123
+ Welcome<Arun@123>
+//06.Write a program that takes radius of a circle as input. Read the entered radius using Scanner class. 
+//Then calculate and print the area and circumference of the circle.
+package pkg1;
+import java.util.Scanner;
+public class Program6 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println("program started");
+		Scanner scan=new Scanner(System.in);
+		System.out.println("Enter the radius of circle=");
+		int r=scan.nextInt();
+		double area=3.14*(r*r);
+		System.out.println("Area of circle is = "+area);
+		double c=2*(3.14*r);
+		System.out.println("circumference of circle is= "+c);
+		System.out.println("program ended");
+
+	}
+output--------------
+program started
+Enter the radius of circle=
+4
+Area of circle is = 50.24
+circumference of circle is= 25.12
+program ended
+
+11. Write a program to swap two numbers without using third variable.
+
+public class Question_11 
+{
+	public static void main(String[] args)
+	{
+		System.out.println("Before Swapping : ");
+		int x = 10;
+		int y = 20;
+		
+		System.out.println(" x = " + x);
+		System.out.println(" y = " + y);
+		
+		System.out.println("After Swapping : ");
+		x = x + y;
+		y = x - y;
+		x = x - y;
+		
+		System.out.println(" x = " + x);
+		System.out.println(" y = " + y);
+	}
+}
+
+12. In a company an employee is paid as under: If his basic salary is less than Rs. 10000, then HRA = 10% of basic salary and DA = 90% of basic salary. If his salary is either equal to or above Rs. 10000, then HRA = Rs. 2000 and DA = 98% of basic salary. If the employee's salary is input by the user write a program to find his gross salary. [ formula : GS= Basic + DA + HRA ]
+
+import java.util.Scanner;
+
+public class Question_12
+{
+	public static void main(String[] args)
+	{
+		Scanner sc = new Scanner(System.in);
+		
+		double bs, gs, da, hra;
+		
+		System.out.println("Enter Basic Salary : ");
+		bs = sc.nextDouble();
+		
+		if(bs  < 10000)
+		{
+			hra = bs * 10 / 100;
+			da = bs * 90 / 100;
+		}
+		
+		else
+		{
+			hra = 2000;
+			da = bs * 98 / 100;
+		}
+		
+		gs = bs + hra + da;
+		System.out.println("Gross Salary : " + gs);
+		
+	}
+}
