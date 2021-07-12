@@ -1,0 +1,566 @@
+
+
+
+
+                                                           PROJECT NAME: HOSPITAL MANAGEMENT SYSTEM
+
+                                                           Project Members:  1. Arun Arjun Patil.
+                                                                             2.Asawari Anil Mhatre.
+
+
+
+////////////////////////////////////////////////////////////////////////////---PATIENT BILL---////////////////////////////////////////////////////////////////////////
+create table Patient_Bill
+(
+Bill_id int NOT NULL primary key,
+patient_id int,
+m_id int,
+m_bill int,
+t_id int,
+t_bill int,
+doctor_id int,
+doctor_bill int,
+foreign key(patient_id) references Patient_Information(patient_id),
+foreign key(doctor_id) references Doctor_Information(doctor_id),
+foreign key(t_id) references test(t_id),
+foreign key(m_id) references medicines(m_id),
+amount int
+);
+
+insert into Patient_bill values
+(1,1,1,4000,1,150,1,3000,0),
+(2,2,2,1500,2,450,2,2000,0),
+(3,3,3,2500,3,250,3,4000,0),
+(4,4,4,3200,4,200,4,2500,0),
+(5,5,5,2000,5,300,5,6000,0);
+
+
+
+
+//foriegn key set in doctor_information
+ALTER TABLE Doctor_information add bill_id int not null;
+set foreign_key_checks=0;
+ALTER TABLE Doctor_information 
+ADD FOREIGN KEY(bill_id) REFERENCES Patient_Bill(bill_id);
+set foreign_key_checks=1;
+
+//foriegn key set in medicines
+ALTER TABLE medicines add bill_id int not null;
+set foreign_key_checks=0;
+ALTER TABLE medicines 
+ADD FOREIGN KEY(bill_id) REFERENCES Patient_bill(bill_id);
+set foreign_key_checks=1;
+
+
+//foriegn key set in patient_information
+ALTER TABLE patient_information add bill_id int not null;
+set foreign_key_checks=0;
+ALTER TABLE patient_information 
+ADD FOREIGN KEY(bill_id) REFERENCES Patient_bill(bill_id); 
+set foreign_key_checks=1;
+desc patient_information;
+
+
+//foriegn key set in Test
+ALTER TABLE Test add bill_id int not null;
+set foreign_key_checks=0;
+ALTER TABLE Test 
+ADD FOREIGN KEY(bill_id) REFERENCES Patient_bill(bill_id); 
+set foreign_key_checks=1;
+desc Test;
+
+////////////////////////////////////////////////////////////////////--PATIENT_INFORMATION--//////////////////////////////////////////////////////////////////////////
+ 
+ insert into patient_information value
+ (10,
+'Ms. sonali Ram Phutane',
+'phutane@123',
+'Street:1799-b',
+'City:Mumbai',
+'State:Maharashtra',
+'Zip code:400025',
+'Country:India',
+'Female',
+null,
+02222056794,
+70,
+22,
+'afraid to stay alone',
+'Lumbar spondylosis 2 years back',
+'Ward-8',
+9,
+10
+);
+
+show triggers;
+
+drop table reminders;
+
+set foreign_key_checks=0;
+
+desc patient_information;
+ select * from reminders;
+ set foreign_key_checks=0;
+ 
+
+
+//////////////////////////////////////////////////////////////////////--message reminders--////////////////////////////////////////////////////////////////////////
+create table reminders 
+(
+id int,
+patient id,
+name varchar(200),
+message varchar(500),
+foriegn key(patient_id) references patient_information(patient_id)
+);
+
+
+//////medical record table///////
+
+create table medical_record
+  (
+       patient_id int,
+	   admit varchar(300),
+       discharged varchar(500),
+       record_date date,
+       foreign key(patient_id) references Patient_Information(patient_id)
+  );
+
+
+
+//////////////////////////////////////////////////////////////////////////////--PATIENT_INFORMATION--////////////////////////////////////////////////////////////////////////////
+create table Patient_Information
+(
+Patient_id int NOT NULL,
+Patient_name varchar(500),
+Patient_email varchar(500),
+Patient_Street varchar(500),
+Patient_City varchar(500),
+Patient_State varchar(500),
+Patient_zipcode varchar(500),
+Patient_Country varchar(500),
+Patient_gender varchar(100),
+Patient_DOB varchar(100),
+Patient_phone bigint,
+Patient_weight int,
+Patient_age int,
+Patient_mental_complaint varchar(300),
+Patient_medical_history varchar(200),
+Patient_ward varchar(10),
+Patient_bed_no int,
+
+PRIMARY KEY(patient_id)
+);
+
+//DATA PATIENT_INFORMATION
+insert into Patient_Information values
+(1,'MR.Narayan Ramman Patil','narayanpatil@123','Street:174-b,Gopal','City:Mumbai','State:Maharashtra','Zip code:400002','India','Male','1999-01-16',02222076894,55,22,'patient is irritable','epevaded for hernia since 4 years back','Ward-1',6),
+(2,
+'MR.Ahil nawaz Khan',
+'ahilkhan@123',
+'Street:13',
+'City:Mumbai',
+'State:Maharashtra',
+'Zip code:400028',
+'Country:India',
+'Male',
+'1996-01-12',07224362072,
+45,
+24,
+'Weak memory',
+'pneumonia 6 months ago',
+'Ward-2',
+5),
+(3,
+'Ms. Gauri Ram Phutane',
+'gauriphutane@123',
+'Street:178-b',
+'City:Mumbai',
+'State:Maharashtra',
+'Zip code:400025',
+'Country:India',
+'Female',
+'1999-03-25',
+02222056794,
+70,
+22,
+'afraid to stay alone',
+'Lumbar spondylosis 2 years back',
+'Ward-3',
+2),
+(4,
+'Ms. aanandi Ram Phutane',
+'aanadiphutane@123',
+'Street:178-b',
+'City:Mumbai',
+'State:Maharashtra',
+'Zip code:400025',
+'Country:India',
+'Female',
+'1999-03-25',
+02222056794,
+70,
+22,
+'afraid to stay alone',
+'Lumbar spondylosis 2 years back',
+'Ward-4',
+10),
+(5,
+'Ms.Sukruti Sukrut mane',
+'sukrutimane@123',
+'Street:78',
+'City:Mumbai',
+'State:Maharashtra',
+'Zip code:400034',
+'Country:India',
+'Female',
+'1986-03-7',
+0222233450,
+60,
+45,
+'feaver and cough since 4 days',
+'Jaundice 2 months ago',
+'Ward-5',
+3);
+
+//////////////////////////////////////////////////////////////////////////--PATIENTEXAMINATION--/////////////////////////////////////////////////////////////////////////
+
+create table Patient_Examination
+(
+pe_id int not null,
+pe_datetime varchar(20),
+pe_head varchar(40),
+pe_neck varchar(40),
+pe_chest varchar(40),
+pe_back varchar(40),
+pe_heart varchar(40),
+pe_pulse varchar(40),
+pe_bp varchar(40),
+patient_id int,
+pe_temp_Celcius int(4),
+foreign key(patient_id) references Patient_Information(patient_id),
+primary key(pe_id)
+);
+
+insert into Patient_Examination
+values(
+1,
+'20-06-2021',
+'no hair fall',
+'small',
+'56 inch',
+'straight',
+'Good',
+'66 bits',
+'111 mm Hg',
+1,
+39
+),
+(
+2,
+'21-06-2021',
+'no hair fall',
+'small',
+'52 inch',
+'straight',
+'Good',
+'68 bits',
+'115 mm Hg',
+2,
+38
+),
+(
+3,
+'22-06-2021',
+'no hair fall',
+'small',
+'50 inch',
+'straight',
+'Good',
+'73 bits',
+'112 mm Hg',
+3,
+38
+),
+(
+4,
+'23-06-2021',
+'no hair fall',
+'small',
+'48 inch',
+'straight',
+'Good',
+'73 bits',
+'112 mm Hg',
+4,
+39
+),
+(
+5,
+'24-06-2021',
+'no hair fall',
+'small',
+'53 inch',
+'straight',
+'Good',
+'66 bits',
+'112 mm Hg',
+5,
+40
+);
+
+////////////////////////////////////////////////////////////////////////////////--PATIENT TREATMENT--/////////////////////////////////////////////////////////////////////////////////
+
+create table PatientTreatment
+(
+pt_id int not null,
+pt_nurse_notes varchar(40),
+pt_doctor_notes varchar(40),
+pe_id int,
+primary key(pt_id),
+foreign key(pe_id) references Patient_Examination(pe_id)
+);
+
+insert into PatientTreatment 
+values(
+1,
+'slow breathing',
+'fever',
+1
+),
+(
+2,
+'slow breathing',
+'fever',
+2
+),
+(
+3,
+'body temp is very high',
+'fever',
+3
+),
+(
+4,
+'slow breathing',
+'fever',
+4
+),
+(
+5,
+'body temp is high',
+'fever',
+5
+);
+
+/////////////////////////////////////////////////////////////////////////////--PATIENT MEDICINES--////////////////////////////////////////////////////////////////////////
+
+create table PatientMedicines
+(
+pm_id int not null,
+pm_dosage varchar(20),
+m_id int,
+pt_id int,
+foreign key (m_id) references medicines(m_id),
+foreign key (pt_id) references PatientTreatment(pt_id),
+primary key(pm_id)
+);
+
+insert into PatientMedicines
+values
+(1,'six dosage',1,1),
+(2,'half dosage',2,2),
+(3,'two dosage',3,3),
+(4,'five dosage',4,4),
+(5,'three dosage',5,5);
+
+///////////////////////////////////////////////////////////////////////////////--PATIENT_TEST--////////////////////////////////////////////////////////////////////////////
+create table PatientTest
+(
+Ptest_id int not null,
+Ptest_consultant varchar(50),
+Ptest_status varchar(50),
+t_id int,
+pt_id int,
+foreign key(t_id) references test(t_id),
+foreign key(pt_id) references patientTreatment(pt_id),
+primary key(ptest_id)
+);
+foreign key(pt_id) references patientTreatment(pt_id),
+
+insert into PatientTest values
+(1,'anil','good',1,1),
+(2,'sunil','moderate',2,2),
+(3,'runil','moderate',3,3),
+(4,'punit','bad',4,4),
+(5,'manit','more test required',5,5);
+
+///////////////////////////////////////////////////////////////////////////////////--TEST_SAMPLE--/////////////////////////////////////////////////////////////////////////
+
+create table TestSample
+(
+ts_id int not null,
+ts_Collector_name varchar(20),
+ts_Collector_datetime datetime,
+ts_Collector_place varchar(20),
+ptest_id int,
+foreign key(ptest_id) references patientTest(ptest_id),
+primary key(ts_id)
+);
+
+insert into TestSample  values
+(1,'kunal','2012-04-08 12:03:01','alibag',1),
+(2,'sunil','2013-05-02 11:06:01','nehuli',2),
+(3,'rahul','2014-06-03 01:02:06','aakshi',3),
+(4,'chetu','2015-07-05 09:09:01','kurul',4),
+(5,'manil','2016-08-09 08:01:02','nagav',5);
+
+////////////////////////////////////////////////////////////////////////////--MEDICINES--/////////////////////////////////////////////////////////////////////////////////////////////////
+
+create table Medicines
+(
+m_id int(10) not null,
+m_name varchar(40),
+m_desc varchar(40),
+m_type varchar(20),
+primary key(m_id)
+);
+
+insert into Medicines
+values(
+1,
+'paracetamol',
+'helps to reduce fever',
+'mild'
+),
+(
+2,
+'aspirin',
+'helps to reduce fever',
+'strong'
+),
+(
+3,
+'docosanol',
+'helps to reduce fever',
+'powerful'
+),
+(
+4,
+'ketoprofen',
+'helps to reduce fever',
+'recommended'
+),
+(
+5,
+'naproxin',
+'helps to reduce fever',
+'very mild'
+);
+
+//////////////////////////////////////////////////////////////////////////////////////--TEST--////////////////////////////////////////////////////////////////////////////////////////////////
+
+create table t
+(
+t_id int(10) primary key,
+t_name varchar(500),
+t_desc varchar(500)
+);
+insert into Test
+values(
+1,
+'WEIL FELIX TEST',
+'The Weil-Felix test detects typhus and specific rickettsial infections.'
+),
+(
+2,
+'WIDAL SLIDE AGGLUTINATION TEST',
+'rapid diagnostic test in typhoid fever.'
+),
+(
+3,
+'CHIKUNGUNYA VIRUS ANTIBODY IgM.',
+'IgM antibodies to Chikungunya virus detected, suggesting recent infection.'
+),
+(
+4,
+'ALDEHYDE CHOPRA TEST FOR KALA AZAR.',
+'The serum globulins increase in a variety of infections and thus this test is rather non-specific.'
+),
+(
+5,
+'DENGUE FEVER ANTIBODIES IgG & IgM, EIA',
+'The serum globulins increase in a variety of infections and thus this test is rather non-specific.'
+);
+
+/////////////////////////////////////////////////////////////////////////////--NURSE_INFORMATION--///////////////////////////////////////////////////////////////////////////////////////
+
+create table Nurse_Information
+(
+nurse_id int,
+nurse_fname varchar(10),
+nurse_lname varchar(10),
+nurse_email varchar(50),
+nurse_password varchar(10),
+nurse_phone bigint,
+nurse_address varchar(100),
+nurse_qualification varchar(20),
+nurse_exp varchar(20)
+);
+insert into  Nurse_Information values
+(1,'Aishwarya','mhatre','aishwarya1123@gmail.com','pinki@123',9923826118,'koproli','BSC','2 years'),
+(2,'Snehal','kawle','snehal1123@gmail.com','minki@123',9924567118,'koproli','BSC','2 years'),
+(3,'Shivani','Patil','shivani1123@gmail.com','cinki@123',923826118,'koproli','BSC','2 years'),
+(4,'Divya','mhatre','divya1123@gmail.com','dinki@123',9923826118,'koproli','BSC','2 years'),
+(5,'Sonali','Dive','sonali1123@gmail.com','pqinki@123',9923826118,'koproli','BSC','2 years');
+
+
+//////////////////////////////////////////////////////////////////////////////DOCTOR_INFORMATION//////////////////////////////////////////////////////////////////////////////////////
+create table Doctor_Information
+(
+doctor_id int NOT NULL primary key,
+doctor_fname varchar(100),
+doctor_lname varchar(100),
+doctor_email varchar(100),
+doctor_password varchar(100),
+doctor_phone bigint,
+doctor_address varchar(100),
+doctor_qualification varchar(20),
+doctor_Specialization varchar(20),
+doctor_exp varchar(20)
+);
+
+insert into  Doctor_Information values
+(1,'DR.Pritesh','mhatre','pinki1123@gmail.com','pinki@123',9923826118,'koproli','MBBS','homeopathic','2 years'),
+(2,'Dr. Manjiri','Vaidya','minki1123@gmail.com','minki@123',9923826118,'koproli','MD','neurosergan','2 years'),
+(3,'Dr.Shailesh','Kumar','cinki1123@gmail.com','cinki@123',9923826118,'koproli','MD','heartspecialist','2 years'),
+(4,'Dr.Skashi','Walde','dinki1123@gmail.com','dinki@123',9923826118,'koproli','MBBS','gynic','2 years'),
+(5,'Dr.Pinki','mhatre','pqinki1123@gmail.com','pqinki@123',9923826118,'koproli','BHMS','homeopathic','2 years');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

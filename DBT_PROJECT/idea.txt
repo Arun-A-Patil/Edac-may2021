@@ -1,0 +1,268 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//TRIGGER 1//
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+delimiter /
+create trigger total_bill
+before insert
+on patient_bill
+for each row
+begin
+set new.amount =(new.m_bill+new.t_bill+new.doctor_bill)+((new.m_bill+new.t_bill+new.doctor_bill)*0.18);
+end;
+/
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//TRIGGER 2//
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DELIMITER /
+
+DELIMITER /
+CREATE TRIGGER after_members_insert
+AFTER INSERT
+ON patient_information 
+FOR EACH ROW
+BEGIN
+    IF NEW.patient_dob IS NULL THEN
+        INSERT INTO reminders(patient_id,message)
+        VALUES(new.patient_id,CONCAT('Hi ', new.patient_name, ', please update your date of birth.'));
+    END IF;
+END;
+/
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//TRIGGER 3//
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+delimiter /
+create trigger admit
+after insert
+on patient_information
+for each row
+begin
+INSERT INTO medical_record(patient_id,patient_name,admit,record_date)
+        VALUES(new.patient_id,new.patient_name,CONCAT('Hi ', new.patient_name, ', is admited.'),sysdate());
+end;
+/
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+//TRIGGER 4//
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+delimiter /
+create trigger discharge
+after delete
+on patient_information
+for each row
+begin
+INSERT INTO medical_record(patient_id,patient_name,discharged,record_date)
+        VALUES(old.patient_id,old.patient_name,CONCAT('Hi ', old.patient_name, ',  get discharged have a good health..!!!.'),sysdate());
+end;
+/
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE1//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1.//view_patient_information;
+create procedure patient_info()
+begin
+select * from patient_information;
+end;
+/
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE2//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2.//view_Patient_medicine;  
+equijoin with PATIENTINFORMATION,medicine and patientmedicine
+create procedure disp_medicine(id int)
+begin
+select Patient_name, m_name,m_desc,m_type,pm_dosage from patient_information,patientmedicines,medicines
+where patient_information.patient_id = medicines.m_id and medicines.m_id= Patientmedicines.pm_id and medicines.m_id=id;
+end;
+/
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE3//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3.//view PatientTest equijoin with patienttest and testsample and test//
+delimiter /
+create procedure disp_test4(t_id int)
+begin
+select ts_collector_name, ts_collector_datetime ,ts_collector_place,t_name,t_desc,ptest_consultant,ptest_status from test,testsample,patienttest
+where test.t_id= testsample.ts_id  and testsample.ts_id = patienttest.ptest_id and test.t_id=t_id;
+end;
+/
+
+call disp_test4(1);/
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE4//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4.//view doctor // view nurse;
+
+create procedure doc_advice1(id int)
+begin
+select Patient_id,Patient_name,pt_doctor_notes from patient_information,patienttreatment
+where patient_information.patient_id =patienttreatment.pt_id and patienttreatment.pt_id=id;
+end;
+/
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE5//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5.// view nurse
+
+create procedure nurse_advice(id int)
+begin
+select Patient_id,Patient_name,pt_nurse_notes from patient_information,patienttreatment
+where patient_information.patient_id =patienttreatment.pt_id and patienttreatment.pt_id=id;
+end;
+/
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//PROCEDURE6//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+6.view_bill
+
+delimiter /
+create procedure disp_bill(id int)
+begin
+select patient_information.patient_id,patient_name,t_name,t_bill,m_name,m_bill,doctor_fname,doctor_bill,amount from patient_information,Doctor_Information,Test,medicines,patient_bill
+where patient_information.patient_id = patient_bill.bill_id and test.t_id = patient_bill.bill_id and medicines.m_id = patient_bill.bill_id and doctor_information.doctor_id = patient_bill.bill_id and patient_bill.bill_id=id;
+end;
+/
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//CURSOR1//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+delimiter /
+create procedure bill_format(id1 int)
+begin
+ declare id int;
+ declare name1 varchar(100);
+ declare Hospitalbill int;
+ declare record1 varchar(500);
+ declare date1 date;
+ declare date2 date;
+ declare totalbill cursor for select patient_bill.Bill_id,patient_information.patient_name,patient_bill.doctor_bill,discharged,record_date,sysdate() from patient_bill,medical_record,Patient_Information
+where Patient_Bill.patient_id=patient_information.patient_id and patient_information.patient_id=medical_record.patient_id and patient_information.patient_id=id1;
+ open totalbill;
+ fetch totalbill into id,name1,record1,Hospitalbill,date1,date2;
+ select id as PATIENT_NUM ,name1 as PATIENTNAME,record1 as status, Hospitalbill ,date1 as from_DATE,date2 as to_date;
+ close totalbill;
+ end ;
+ /
+select * from patient_bill;
+call bill_format(2);
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//CURSOR2//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+delimiter /
+create procedure m_record()
+begin
+declare p_id int;
+declare p_name varchar(100);
+declare p_stop integer default 0;
+declare c1 cursor for select patient_id,patient_name from patient_information;
+declare continue handler for NOT FOUND set p_stop=1;
+open c1;
+get_emp:LOOP
+  fetch c1 into p_id,p_name;
+  if p_stop=1 then
+  leave get_emp;
+  end if;
+  select concat(p_id,p_name) as "RECORD";
+  END LOOP get_emp;
+  close c1;
+  end /
+  
+calling:call m_record();
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//CURSOR3//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+delimiter /
+create procedure search_record(id1 int)
+begin
+ declare id int;
+ declare name1 varchar(100);
+ declare record1 varchar(500);
+ declare record2 varchar(500);
+ declare date1 date;
+ declare medrecord cursor for select medical_record.patient_id,patient_information.patient_name,admit,discharged,record_date from medical_record,patient_information
+ where medical_record.patient_id=patient_information.patient_id and patient_information.patient_id=id1;
+ open medrecord;
+ fetch medrecord into id,name1,record1,record2,date1;
+ select id as PATIENT_NUM ,name1 as PATIENTNAME,record1 ADMITTED_RECORD,record2 DISCHARGED_RECORD,date1 TODATE;
+ close medrecord;
+ end ;
+ /
+
+delimiter ;
+call search_record(16); 
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//CURSOR4//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+delimiter /
+create procedure medicine_record(id1 int)
+begin
+ declare id int;
+ declare name1 varchar(100);
+ declare record1 varchar(500);
+ declare record2 varchar(500);
+ declare date1 date;
+ declare date2 date;
+ declare med_record cursor for select medicines.m_id,patient_information.patient_name,m_name,pm_dosage,sysdate(),adddate(sysdate(),15) from medicines,patient_information,
+ patientmedicines where medicines.m_id=patient_information.patient_id and  medicines.m_id = patientmedicines.pm_id and patient_information.patient_id=id1;
+ open med_record;
+ fetch med_record into id,name1,record1,record2,date1,date2;
+ select id as PATIENT_NUM ,name1 as PATIENTNAME,record1 as medicines,record2 as dosage,date1 as from_DATE,date2 as to_date;
+ close med_record;
+ end ;
+ /
+
+call medicine_record(1);
+ 
+  
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Indexes//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1.Index1
+create index I_Patient_Information_Patient_id on patient_information(patient_name);
+show tables Patient_Information;
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+2.Index2
+create unique index I_Ptest_status_Collector_Name on PatientTest(ptest_id);
+show indexes from patienttest;
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//View//
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1.View1
+create view v1
+  as
+  select m_id,m_type,m_desc from medicines;
+  show create view v1;
+
+2.view2
+create view v2
+  as
+  select ts_collector_name,ts_collector_place from testsample;
+  show create view v2;
+
+
+
+
+
+
+
+
